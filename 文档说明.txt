@@ -1,0 +1,56 @@
+1=========虚拟环境下创建项目
+	终端：django-admin startproject 项目名称
+	pycharm中选择django创建项目
+2=========项目运行
+	python manage.py runserver (ip端口，默认8000)
+3=========setting.py 中的常用配置
+	[16]：BASE_DIR = 项目在磁盘上存在的目录路径
+	[26]：DEBUG = 是否开启调试模式，开发阶段True，上线后False
+	[107]: LANGUAGE_CODE = 'zh-hans'  # 语言
+	[109]: TIME_ZONE = 'Asia/Shanghai' # 时区
+4==========静态文件的处理
+	在项目目录下建立文件夹static,在此文件夹里建文件夹来分类放静态文件(css,images,js)
+	静态文件的参数配置：
+		STATIC_URL = '/static/'   # 访问静态文件的URL前缀
+		STATICFILES_DIRS=[        # 存放查找静态文件的目录
+			os.path.join(BASE_DIR,'static')
+		]
+		
+	访问：http://127.0.0.1:8000/static/MV/unravel
+	
+	问题1：django如何确定请求的是静态文件
+		将请求路径与STATIC_URL进行匹配
+	问题2：django如何在磁盘上找到静态文件
+		将STATICFILES_DIRS指定的目录与请求文件路径进行拼接
+	问题3：Django 仅在调试模式下（DEBUG=True）能对外提供静态文件。
+5==========创建子应用，django的视图存放在子应用中
+	#1 在pycharm下的终端创建子应用
+		python manage.py startapp 子应用名
+		
+	#2 在setting.py中安装子应用
+		INSTALLED_APPS = [
+		...
+		'users.apps.UsersConfig',]
+		
+	#3 在应用的views.py中定义视图函数
+		def index(request):
+			return HttpResponse('hello django')
+		
+	#4 在应用中创建urls.py:用于配置应用中的路由
+		from django.conf.urls import url
+		from . import views
+		#列表名称的单词是固定的，不能改
+		urlpatterns=[
+		# url(路径, 视图)
+		# url('正则表达式',views.视图函数名)
+			url(r'^index$',views.index),
+		]
+	#4 将应用的路由添加到总路由中
+		from django.conf.urls import url, include
+		urlpatterns = [
+			# url(路径，路由)
+			url('^users/',include('users.urls')),
+		]
+	#5 访问：http://127.0.0.1:8000/users/index
+
+	
